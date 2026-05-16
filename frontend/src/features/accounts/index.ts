@@ -3,8 +3,8 @@ import { apiSlice } from "@/redux";
 const accountApi = apiSlice.injectEndpoints({
   endpoints: (build) => ({
     getAccounts: build.query({
-      query: ({ userId }: { userId: string }) => ({
-        url: `/payout-accounts/${userId}`,
+      query: ({ userEmail }: { userEmail: string }) => ({
+        url: `/payout-accounts/${userEmail}`,
       }),
       providesTags: ["payout-accounts"],
     }),

@@ -8,7 +8,7 @@ import { schemaOptions } from "@/utils/schemaOptions";
 
 const PlaidItemSchema = new Schema<IPlaidItem>(
   {
-    user: {
+    email: {
       type: String,
       required: true,
       index: true,
@@ -36,7 +36,7 @@ export const PlaidItemModel = model("PlaidItem", PlaidItemSchema);
 
 const BankAccountSchema = new Schema<IBankAccount>(
   {
-    user: {
+    email: {
       type: String,
       required: true,
       index: true,

@@ -5,8 +5,8 @@ import { HttpStatusCode } from "@/lib/httpStatus";
 
 class Controller extends BaseController {
   getUserAccounts = this.catchAsync(async (req: Request, res: Response) => {
-    const id = req.params.userId;
-    const result = await PayoutAccountService.getUserAccounts(id);
+    const email = req.params.email;
+    const result = await PayoutAccountService.getUserAccounts(email);
     this.sendResponse(res, {
       statusCode: HttpStatusCode.OK,
       success: true,

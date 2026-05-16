@@ -9,7 +9,7 @@ import { useEffect, useState } from "react";
 
 const HomePage = () => {
   const [user, setUser] = useState<any>(null);
-  const { data, isLoading } = useGetAccountsQuery({ userId: user?.id });
+  const { data, isLoading } = useGetAccountsQuery({ userEmail: user?.email });
   const accounts = data?.data as IParentAccount[];
 
   useEffect(() => {
@@ -30,7 +30,7 @@ const HomePage = () => {
       {!user?.id ? (
         <Login />
       ) : accounts?.length <= 0 ? (
-        <PlaidButton userId={user?.id} />
+        <PlaidButton userEmail={user?.email} />
       ) : (
         <Accounts accounts={accounts} userId={user?.id} />
       )}

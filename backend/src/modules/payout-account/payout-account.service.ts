@@ -10,7 +10,7 @@ import ApiError from "@/middlewares/error";
 import { HttpStatusCode } from "@/lib/httpStatus";
 
 class Service {
-  async create(userId: string, payload: any) {
+  async create(userEmail: string, payload: any) {
     const session = await mongoose.startSession();
 
     session.startTransaction();
@@ -19,7 +19,7 @@ class Service {
       const { access_token, item, accounts, numbers } = payload;
 
       const existingItem = await PlaidItemModel.findOne({
-        user: userId,
+        email: userEmail,
         institution_id: item.institution_id,
       });
 
@@ -33,7 +33,7 @@ class Service {
       const plaidItem = await PlaidItemModel.create(
         [
           {
-            user: userId,
+            email: userEmail,
 
             access_token: CryptoInstance.encrypt(access_token),
 
@@ -60,7 +60,7 @@ class Service {
         const bankAccount = await BankAccountModel.create(
           [
             {
-              user: userId,
+              email: userEmail,
 
               plaidItem: plaidItemDoc._id,
 
@@ -131,12 +131,12 @@ class Service {
     }
   }
 
-  async getUserAccounts(userId: string) {
-    const items = await PlaidItemModel.find({ user: userId })
+  async getUserAccounts(userEmail: string) {
+    const items = await PlaidItemModel.find({ email: userEmail })
       .select("institution_name institution_id item_id createdAt")
       .lean();
 
-    const accounts = await BankAccountModel.find({ user: userId })
+    const accounts = await BankAccountModel.find({ email: userEmail })
       .select(
         "plaidItem name official_name type subtype mask balances isActive is_default_payout"
       )

@@ -6,15 +6,15 @@ import {
 } from "@/features/plaid";
 
 type Props = {
-  userId: string;
+  userEmail: string;
   buttonText?: string;
 };
 
 const PlaidButton = ({
-  userId,
+  userEmail,
   buttonText = "Connect Bank Account",
 }: Props) => {
-  const { data } = useGetLinkTokenQuery({});
+  const { data } = useGetLinkTokenQuery({ email: userEmail });
   const link_token = data?.data?.link_token as string;
   const [exchangePublicToken, { isLoading }] = useExchangePublicTokenMutation();
 
@@ -27,7 +27,7 @@ const PlaidButton = ({
       try {
         const result = await exchangePublicToken({
           public_token: public_token,
-          userId: userId,
+          email: userEmail,
           institution: {
             institution_id: metadata.institution?.institution_id as string,
             institution_name: metadata.institution?.institution_id as string,

@@ -2,7 +2,7 @@ import { Types } from "mongoose";
 
 export type IPlaidItem = {
   _id: Types.ObjectId;
-  user: string;
+  email: string;
 
   access_token: string;
   item_id: string;
@@ -17,7 +17,7 @@ export type IPlaidItem = {
 export type IBankAccount = {
   _id: Types.ObjectId;
 
-  user: string;
+  email: string;
   plaidItem: Types.ObjectId;
 
   account_id: string; // Plaid account_id (unique per item)

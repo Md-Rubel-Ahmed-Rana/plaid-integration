@@ -5,7 +5,8 @@ import { HttpStatusCode } from "@/lib/httpStatus";
 
 class Controller extends BaseController {
   createLinkToken = this.catchAsync(async (req: Request, res: Response) => {
-    const result = await PlaidService.createLinkToken();
+    const userEmail = req.params.email;
+    const result = await PlaidService.createLinkToken(userEmail);
     this.sendResponse(res, {
       statusCode: HttpStatusCode.OK,
       success: true,

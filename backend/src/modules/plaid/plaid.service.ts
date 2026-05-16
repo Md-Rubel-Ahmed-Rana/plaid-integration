@@ -5,11 +5,11 @@ import { PayoutAccountService } from "../payout-account/payout-account.service";
 import { PlaidItemModel } from "../payout-account/payout-account.model";
 
 class Service {
-  async createLinkToken() {
+  async createLinkToken(userEmail: string) {
     try {
       const response = await plaidClient.linkTokenCreate({
         user: {
-          client_user_id: "user-id-123",
+          client_user_id: userEmail,
         },
         client_name: "Plaid Integration",
         products: ["auth"] as any,
@@ -30,7 +30,7 @@ class Service {
 
   async exchangePublicToken(
     public_token: string,
-    userId: string,
+    userEmail: string,
     institution: { institution_id: string; institution_name: string }
   ) {
     console.log({ institution });
@@ -42,7 +42,7 @@ class Service {
     }
 
     const existingItem = await PlaidItemModel.findOne({
-      user: userId,
+      email: userEmail,
       institution_id: institution.institution_id,
     });
 
@@ -79,7 +79,7 @@ class Service {
         access_token,
       };
 
-      await PayoutAccountService.create(userId, payload);
+      await PayoutAccountService.create(userEmail, payload);
 
       return payload;
     } catch (error: any) {
