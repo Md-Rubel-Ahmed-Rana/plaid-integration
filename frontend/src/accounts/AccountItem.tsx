@@ -17,9 +17,7 @@ const AccountItem = ({ account }: Props) => {
 
         <div>
           <h3 className="font-medium text-gray-900">{account.name.slice(5)}</h3>
-          <p className="text-xs text-gray-500">
-            {account.subtype} • **** {account.mask}
-          </p>
+          <p className="text-xs text-gray-500">**** {account.mask}</p>
 
           <div className="flex items-center gap-2 mt-1">
             {account.is_default_payout && <DefaultPayoutBadge />}

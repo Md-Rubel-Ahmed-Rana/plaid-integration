@@ -3,6 +3,6 @@ import { PayoutAccountController } from "./payout-account.controller";
 
 const router = Router();
 
-router.get("/:email", PayoutAccountController.getUserAccounts);
+router.get("/:email/accounts", PayoutAccountController.getUserAccounts);
 
 export const PayoutAccountRoutes = router;

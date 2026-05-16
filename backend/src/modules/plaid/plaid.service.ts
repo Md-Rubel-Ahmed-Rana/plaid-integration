@@ -9,23 +9,34 @@ class Service {
     try {
       const response = await plaidClient.linkTokenCreate({
         user: {
-          client_user_id: userEmail,
+          client_user_id: this.cleanUpEmail(userEmail),
         },
         client_name: "Plaid Integration",
         products: ["auth"] as any,
         country_codes: ["US"] as any,
         language: "en",
       });
+      console.log({ response });
       return {
         link_token: response.data.link_token,
       };
     } catch (error: any) {
-      console.log(error.response?.data || error);
+      console.log(error);
       throw new ApiError(
         HttpStatusCode.INTERNAL_SERVER_ERROR,
         error.response?.data || error?.message
       );
     }
+  }
+
+  private cleanUpEmail(email: string) {
+    /*
+    ==== Example ======
+    input: "mdrubelahmedrana521@gmail.com"
+    output: "mdrubelahmedrana521"
+  */
+
+    return email.split("@")[0];
   }
 
   async exchangePublicToken(

@@ -4,7 +4,7 @@ const accountApi = apiSlice.injectEndpoints({
   endpoints: (build) => ({
     getAccounts: build.query({
       query: ({ userEmail }: { userEmail: string }) => ({
-        url: `/payout-accounts/${userEmail}`,
+        url: `/payout-accounts/${userEmail}/accounts`,
       }),
       providesTags: ["payout-accounts"],
     }),

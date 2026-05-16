@@ -16,16 +16,17 @@ class Controller extends BaseController {
   });
 
   exchangePublicToken = this.catchAsync(async (req: Request, res: Response) => {
-    const { public_token, userId, institution } = req.body;
+    const { public_token, email, institution } = req.body;
     const result = await PlaidService.exchangePublicToken(
       public_token,
-      userId,
+      email,
       institution
     );
     this.sendResponse(res, {
       statusCode: HttpStatusCode.OK,
       success: true,
-      message: "Your Bank account verified successfully",
+      message:
+        "Your Bank account has been verified and added as 'Payouts' successfully",
       data: result,
     });
   });
