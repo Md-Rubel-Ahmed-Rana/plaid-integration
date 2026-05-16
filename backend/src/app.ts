@@ -19,9 +19,11 @@ app.get("/", async (req, res) => {
   res.status(200).json({
     statusCode: 200,
     success: true,
-    message:
-      "Modular Express.js + MongoDB Server Boilerplate application is up and running",
-    data: null,
+    message: "Plaid integration application is up and running...",
+    data: {
+      uptime: `${process.uptime().toFixed(2)} seconds`,
+      timestamp: new Date().toLocaleString(),
+    },
   });
 });
 
