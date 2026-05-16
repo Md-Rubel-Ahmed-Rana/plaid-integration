@@ -1,0 +1,26 @@
+import { Document, Types } from "mongoose";
+
+export type IUser = {
+  id: Types.ObjectId | string;
+  _id: Types.ObjectId | string;
+  name: string;
+  username: string; // auto generated from name
+  phone_number: string;
+  profile_picture?: string;
+  email: string;
+  role: string;
+  is_verified?: boolean;
+  password: string;
+  status: IUserStatus;
+  date_of_birth?: Date;
+  gender?: "male" | "female";
+  last_login_at?: Date;
+  addresses: Types.ObjectId[];
+} & Document;
+
+type IUserStatus = "inactive" | "active" | "banned";
+
+export type IUserFilters = {
+  role: string;
+  status: "inactive" | "active";
+};

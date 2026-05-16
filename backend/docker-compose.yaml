@@ -1,0 +1,9 @@
+services:
+  express-mongodb-server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "5000:5000"
+    env_file:
+      - .env
