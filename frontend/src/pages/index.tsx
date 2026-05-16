@@ -32,7 +32,7 @@ const HomePage = () => {
       ) : accounts?.length <= 0 ? (
         <PlaidButton userEmail={user?.email} />
       ) : (
-        <Accounts accounts={accounts} userId={user?.id} />
+        <Accounts accounts={accounts} userEmail={user?.email} />
       )}
     </div>
   );

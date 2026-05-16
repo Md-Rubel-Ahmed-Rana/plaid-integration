@@ -4,10 +4,10 @@ import PlaidButton from "@/components/PlaidButton";
 
 type Props = {
   accounts: IParentAccount[];
-  userId: string;
+  userEmail: string;
 };
 
-const AccountsPage = ({ accounts = [], userId }: Props) => {
+const AccountsPage = ({ accounts = [], userEmail }: Props) => {
   return (
     <div className="p-6">
       <div className="">
@@ -17,7 +17,7 @@ const AccountsPage = ({ accounts = [], userId }: Props) => {
               Payout Accounts
             </h1>
             <PlaidButton
-              userId={userId}
+              userEmail={userEmail}
               buttonText="Connect Another Bank Account"
             />
           </div>
