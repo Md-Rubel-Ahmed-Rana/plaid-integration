@@ -4,7 +4,7 @@ const plaidApi = apiSlice.injectEndpoints({
   endpoints: (build) => ({
     getLinkToken: build.query({
       query: ({ email }: { email: string }) => ({
-        url: `/plaid/${email}/link-token`,
+        url: `/api/v1/plaid/${email}/link-token`,
       }),
       providesTags: ["payout-accounts"],
     }),
@@ -14,7 +14,7 @@ const plaidApi = apiSlice.injectEndpoints({
         email: string;
         institution: { institution_id: string; institution_name: string };
       }) => ({
-        url: `/plaid/exchange-public-token`,
+        url: `/api/v1/plaid/exchange-public-token`,
         method: "POST",
         body: data,
       }),

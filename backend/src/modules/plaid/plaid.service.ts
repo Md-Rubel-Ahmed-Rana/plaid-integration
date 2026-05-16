@@ -16,7 +16,6 @@ class Service {
         country_codes: ["US"] as any,
         language: "en",
       });
-      console.log({ response });
       return {
         link_token: response.data.link_token,
       };
@@ -30,12 +29,6 @@ class Service {
   }
 
   private cleanUpEmail(email: string) {
-    /*
-    ==== Example ======
-    input: "mdrubelahmedrana521@gmail.com"
-    output: "mdrubelahmedrana521"
-  */
-
     return email.split("@")[0];
   }
 
@@ -44,7 +37,6 @@ class Service {
     userEmail: string,
     institution: { institution_id: string; institution_name: string }
   ) {
-    console.log({ institution });
     if (!public_token) {
       throw new ApiError(
         HttpStatusCode.BAD_REQUEST,

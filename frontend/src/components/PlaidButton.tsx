@@ -30,7 +30,7 @@ const PlaidButton = ({
           email: userEmail,
           institution: {
             institution_id: metadata.institution?.institution_id as string,
-            institution_name: metadata.institution?.institution_id as string,
+            institution_name: metadata.institution?.name as string,
           },
         }).unwrap();
         console.log({ result });
