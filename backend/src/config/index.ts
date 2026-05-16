@@ -3,6 +3,11 @@ import path from "path";
 
 dotenv.config({ path: path.join(process.cwd(), ".env") });
 
+const cors_origins = (process.env.CORS_ORIGINS || "")
+  .split(",")
+  .map((origin) => origin.trim())
+  .filter(Boolean);
+
 export const envConfig = {
   app: {
     port: process.env.PORT ? Number(process.env.PORT) : 5000,
@@ -11,9 +16,7 @@ export const envConfig = {
     encryption_key: process.env.ENCRYPTION_KEY as string,
   },
 
-  cors_origins: process.env.CORS_ORIGINS
-    ? (process.env.CORS_ORIGINS as string).split(", ")
-    : [],
+  cors_origins: cors_origins,
   database: {
     mongodb_url: process.env.MONGODB_URL as string,
   },
