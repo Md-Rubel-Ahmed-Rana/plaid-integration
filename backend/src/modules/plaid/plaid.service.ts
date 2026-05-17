@@ -2,7 +2,10 @@ import { plaidClient } from "@/config/plaid";
 import { HttpStatusCode } from "@/lib/httpStatus";
 import ApiError from "@/middlewares/error";
 import { PayoutAccountService } from "../payout-account/payout-account.service";
-import { PlaidItemModel } from "../payout-account/payout-account.model";
+import {
+  BankAccountModel,
+  PlaidItemModel,
+} from "../payout-account/payout-account.model";
 
 class Service {
   async createLinkToken(userEmail: string) {
@@ -35,7 +38,10 @@ class Service {
   async exchangePublicToken(
     public_token: string,
     userEmail: string,
-    institution: { institution_id: string; institution_name: string }
+    institution: {
+      institution_id: string;
+      institution_name: string;
+    }
   ) {
     if (!public_token) {
       throw new ApiError(
@@ -48,15 +54,6 @@ class Service {
       email: userEmail,
       institution_id: institution.institution_id,
     });
-
-    if (existingItem) {
-      throw new ApiError(
-        HttpStatusCode.CONFLICT,
-        `You have already added the "${institution.institution_name}" account`
-      );
-    }
-
-    //TODO: We also need to verify sub account is exist or not
 
     try {
       const exchangeResponse = await plaidClient.itemPublicTokenExchange({
@@ -73,7 +70,44 @@ class Service {
       const numbers = authResponse.data.numbers;
       const item = authResponse.data.item;
 
-      //TODO: We also need to verify sub account is exist or not
+      if (existingItem) {
+        const newAccounts = [];
+
+        for (const account of accounts) {
+          const fingerprint = this.generateAccountFingerprint(
+            institution,
+            account.name
+          );
+          const isAccountExist = await BankAccountModel.findOne({
+            fingerprint,
+          });
+
+          if (isAccountExist) continue;
+
+          newAccounts.push(account);
+        }
+
+        if (!newAccounts.length) {
+          throw new ApiError(
+            HttpStatusCode.BAD_REQUEST,
+            "Your selected bank account(s) already exist"
+          );
+        }
+
+        await PayoutAccountService.createOnExistingPlaidItem(
+          existingItem._id,
+          newAccounts,
+          numbers,
+          item,
+          userEmail
+        );
+
+        return {
+          accounts: newAccounts,
+          numbers,
+          item,
+        };
+      }
 
       const payload = {
         accounts,
@@ -86,13 +120,31 @@ class Service {
 
       return payload;
     } catch (error: any) {
-      console.log(error.response?.data || error);
+      console.log(error);
       throw new ApiError(
         HttpStatusCode.INTERNAL_SERVER_ERROR,
         error.response?.data || error?.message
       );
     }
   }
+
+  generateAccountFingerprint = (
+    institution: { institution_id: string; institution_name: string },
+    accountName: string
+  ) => {
+    const normalize = (value: string) => {
+      return value
+        .toLowerCase()
+        .trim()
+        .replace(/[^a-z0-9]/gi, "");
+    };
+
+    return [
+      normalize(institution.institution_name),
+      normalize(institution.institution_id),
+      normalize(accountName),
+    ].join("-");
+  };
 }
 
 export const PlaidService = new Service();

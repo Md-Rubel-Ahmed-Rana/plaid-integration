@@ -22,6 +22,8 @@ export type IBankAccount = {
 
   account_id: string; // Plaid account_id (unique per item)
 
+  fingerprint: string;
+
   name: string;
   official_name?: string;
 

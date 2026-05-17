@@ -1,6 +1,5 @@
-import mongoose from "mongoose";
+import mongoose, { Types } from "mongoose";
 import { CryptoInstance } from "@/lib/crypto";
-
 import {
   BankAccountModel,
   BankAccountNumberModel,
@@ -57,12 +56,124 @@ class Service {
       for (let i = 0; i < accounts.length; i++) {
         const account = accounts[i];
 
+        const fingerprint = this.generateAccountFingerprint(
+          {
+            institution_id: item.institution_id,
+            institution_name: item.institution_name,
+          },
+          account.name
+        );
+
         const bankAccount = await BankAccountModel.create(
           [
             {
               email: userEmail,
 
               plaidItem: plaidItemDoc._id,
+              fingerprint: fingerprint,
+
+              account_id: account.account_id,
+
+              name: account.name,
+              official_name: account.official_name,
+
+              type: account.type,
+              subtype: account.subtype,
+
+              mask: account.mask,
+              holder_category: account.holder_category,
+
+              balances: {
+                available: account.balances.available,
+                current: account.balances.current,
+                limit: account.balances.limit,
+                iso_currency_code: account.balances.iso_currency_code,
+              },
+
+              is_default_payout: i === 0,
+
+              verification_status: "verified",
+
+              last_verified_at: new Date(),
+            },
+          ],
+          { session }
+        );
+
+        const bankAccountDoc = bankAccount[0];
+
+        const ach = achMap.get(account.account_id);
+
+        if (ach) {
+          await BankAccountNumberModel.create(
+            [
+              {
+                account: bankAccountDoc._id,
+
+                encrypted_account_number: CryptoInstance.encrypt(ach.account),
+
+                encrypted_routing_number: CryptoInstance.encrypt(ach.routing),
+
+                encrypted_wire_routing: ach.wire_routing
+                  ? CryptoInstance.encrypt(ach.wire_routing)
+                  : undefined,
+
+                scheme: "ach",
+
+                is_tokenized_account_number: ach.is_tokenized_account_number,
+              },
+            ],
+            { session }
+          );
+        }
+      }
+
+      await session.commitTransaction();
+
+      return true;
+    } catch (error) {
+      await session.abortTransaction();
+      throw error;
+    } finally {
+      session.endSession();
+    }
+  }
+
+  async createOnExistingPlaidItem(
+    plaidItemId: Types.ObjectId,
+    accounts: any,
+    numbers: any,
+    item: any,
+    userEmail: string
+  ) {
+    const session = await mongoose.startSession();
+
+    session.startTransaction();
+
+    try {
+      const achMap = new Map();
+
+      for (const ach of numbers?.ach || []) {
+        achMap.set(ach.account_id, ach);
+      }
+
+      for (let i = 0; i < accounts.length; i++) {
+        const account = accounts[i];
+
+        const fingerprint = this.generateAccountFingerprint(
+          {
+            institution_id: item.institution_id,
+            institution_name: item.institution_name,
+          },
+          account.name
+        );
+        const bankAccount = await BankAccountModel.create(
+          [
+            {
+              email: userEmail,
+
+              plaidItem: plaidItemId,
+              fingerprint: fingerprint,
 
               account_id: account.account_id,
 
@@ -138,7 +249,7 @@ class Service {
 
     const accounts = await BankAccountModel.find({ email: userEmail })
       .select(
-        "plaidItem name official_name type subtype mask balances isActive is_default_payout"
+        "plaidItem name official_name account_id type subtype mask balances isActive is_default_payout"
       )
       .lean();
 
@@ -146,7 +257,7 @@ class Service {
       const itemAccounts = accounts
         .filter((acc) => acc.plaidItem.toString() === item._id.toString())
         .map((acc) => ({
-          id: acc._id,
+          id: acc.account_id,
           name: acc.name,
           official_name: acc.official_name,
           type: acc.type,
@@ -175,6 +286,24 @@ class Service {
 
     return grouped;
   }
+
+  generateAccountFingerprint = (
+    institution: { institution_id: string; institution_name: string },
+    accountName: string
+  ) => {
+    const normalize = (value: string) => {
+      return value
+        .toLowerCase()
+        .trim()
+        .replace(/[^a-z0-9]/gi, "");
+    };
+
+    return [
+      normalize(institution.institution_name),
+      normalize(institution.institution_id),
+      normalize(accountName),
+    ].join("-");
+  };
 }
 
 export const PayoutAccountService = new Service();

@@ -54,6 +54,11 @@ const BankAccountSchema = new Schema<IBankAccount>(
       required: true,
     },
 
+    fingerprint: {
+      type: String,
+      required: true,
+    },
+
     name: String,
     official_name: String,
 

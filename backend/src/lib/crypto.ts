@@ -6,7 +6,6 @@ class Crypto {
   private ENCRYPTION_KEY = envConfig.app.encryption_key;
   private IV_LENGTH = 16;
   encrypt(text: string): string {
-    console.log({ encryption_key: this.ENCRYPTION_KEY });
     if (this.ENCRYPTION_KEY.length !== 32) {
       throw new Error(
         "ENCRYPTION_KEY must be exactly 32 bytes for aes-256-cbc"

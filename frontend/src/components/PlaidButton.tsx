@@ -32,7 +32,7 @@ const PlaidButton = ({
   const [exchangePublicToken, { isLoading: isConnecting }] =
     useExchangePublicTokenMutation();
 
-  const { open, ready, exit } = usePlaidLink({
+  const { open, ready } = usePlaidLink({
     token: link_token || "",
 
     onSuccess: async (public_token: string, metadata) => {
@@ -64,8 +64,6 @@ const PlaidButton = ({
       setLoadingUI(false);
     },
   });
-
-  console.log({ open, ready, exit, loadingUI });
 
   const isPreparingPlaid =
     isLinkTokenLoading || isFetching || !link_token || !ready || loadingUI;
